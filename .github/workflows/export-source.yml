@@ -17,7 +17,7 @@ jobs:
         with:
           ref: agent/custom-android-action-receiver
           show-progress: false
-      - name: Assemble and verify patch
+      - name: Assemble patch encoding
         run: |
           cat \
             .github/patch/custom-action-receiver.part00 \
@@ -28,8 +28,10 @@ jobs:
             .github/patch/custom-action-receiver.part05 \
             .github/patch/custom-action-receiver.part06 \
             > /tmp/custom-action-receiver.b64
-          base64 --decode /tmp/custom-action-receiver.b64 > /tmp/custom-action-receiver.patch
-          echo "4b6f6b80d95e67bb21a218bdfefcd03a3bffd8642feba274016a5fc0d835f901  /tmp/custom-action-receiver.patch" | sha256sum --check
+      - name: Decode patch
+        run: base64 --decode /tmp/custom-action-receiver.b64 > /tmp/custom-action-receiver.patch
+      - name: Verify decoded patch
+        run: echo "4b6f6b80d95e67bb21a218bdfefcd03a3bffd8642feba274016a5fc0d835f901  /tmp/custom-action-receiver.patch" | sha256sum --check
       - name: Check and apply implementation
         run: |
           git apply --check --verbose /tmp/custom-action-receiver.patch

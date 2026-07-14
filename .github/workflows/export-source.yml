@@ -1,9 +1,9 @@
 name: Export source
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/custom-android-action-receiver
+      - master
 
 permissions:
   contents: read

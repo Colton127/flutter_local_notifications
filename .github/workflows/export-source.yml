@@ -17,6 +17,24 @@ jobs:
         with:
           ref: agent/custom-android-action-receiver
           show-progress: false
+      - name: Verify replacement segment 02a
+        continue-on-error: true
+        run: echo "f229cfc9f8d90c864fefe0a80bad193abfc714798c61ca2566850e111217d844  .github/patch/custom-action-receiver.part02a" | sha256sum --check
+      - name: Verify replacement segment 02b
+        continue-on-error: true
+        run: echo "802ccb21306a9519cc08ee75c28bc63c51ed1066066b1f6aec37d3f97d89e3d1  .github/patch/custom-action-receiver.part02b" | sha256sum --check
+      - name: Verify replacement segment 05a
+        continue-on-error: true
+        run: echo "ce381ed315df4067d225211cf909565834a7a7b6c9ad92c46af430b6f7497eca  .github/patch/custom-action-receiver.part05a" | sha256sum --check
+      - name: Verify replacement segment 05b
+        continue-on-error: true
+        run: echo "f94d5f3f2e96d56b8273c9c9ae811b443e100a43ae6bf39b001432ea47efa222  .github/patch/custom-action-receiver.part05b" | sha256sum --check
+      - name: Verify replacement segment 06a
+        continue-on-error: true
+        run: echo "d84a9645b8365b659e718a279a2bdec42e349efc948fdda319122c238a87e8b0  .github/patch/custom-action-receiver.part06a" | sha256sum --check
+      - name: Verify replacement segment 06b
+        continue-on-error: true
+        run: echo "bf67eb542581dd99ea10491434e79ece89d24960ad8d63cd5edffff4f3284efe  .github/patch/custom-action-receiver.part06b" | sha256sum --check
       - name: Assemble and decode patch
         run: |
           cat \

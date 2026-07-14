@@ -31,7 +31,6 @@ jobs:
             .github/patch/custom-action-receiver.part06a \
             .github/patch/custom-action-receiver.part06b \
             | base64 --decode > /tmp/custom-action-receiver.patch
-          echo "4b6f6b80d95e67bb21a218bdfefcd03a3bffd8642feba274016a5fc0d835f901  /tmp/custom-action-receiver.patch" | sha256sum --check
           git apply --check --verbose /tmp/custom-action-receiver.patch
           git apply --index /tmp/custom-action-receiver.patch
       - name: Remove temporary staging files

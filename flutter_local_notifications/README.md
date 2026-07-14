@@ -391,7 +391,13 @@ For apps that need the following functionality please complete the following in 
     </receiver>
     ```
 * To use full-screen intent notifications, specify the `<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />` permission between the `<manifest>` tags. Developers will also need to follow the instructions documented [here](#full-screen-intent-notifications)
-* To use notification actions, specify `<receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver" />` between the `<application>` tags so that the plugin can process the actions and trigger the appropriate callback(s)
+* To use notification actions that invoke the Dart foreground or background callbacks, specify `<receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver" />` between the `<application>` tags so that the plugin can process the actions and trigger the appropriate callback(s)
+* Notification actions can instead target an app-defined native `BroadcastReceiver`. Register each target receiver between the `<application>` tags. Extending `FlutterLocalNotificationsActionReceiver` preserves the action's configured `cancelNotification` behaviour
+    ```xml
+    <receiver
+        android:name=".ReminderActionReceiver"
+        android:exported="false" />
+    ```
 * To use foreground services the following changes are needed
     * [Request the appropriate permissions](https://developer.android.com/develop/background-work/services/foreground-services#request-foreground-service-permissions)
     * Declare the service exposed by the plugin by adding the following between `<application>` tags. An example of what this looks like is below where `<foreground service types>` should be replaced with the foreground service type(s) your app needs. If you want your foreground service to be stopped if your app is stopped, set `android:stopWithTask` to `true`
@@ -705,6 +711,50 @@ Future<void> _showNotificationWithActions() async {
 ```
 
 Each notification will have a internal ID & an public action title.
+
+#### Targeting a native Android BroadcastReceiver
+
+An Android action can be delivered directly to an app-defined native
+`BroadcastReceiver`, without starting the app's activity or the plugin's
+background Flutter engine. Specify an `AndroidNotificationActionTarget` on the
+action:
+
+```dart
+const AndroidNotificationAction(
+  'play',
+  'Play',
+  target: AndroidNotificationActionTarget.broadcastReceiver(
+    className: 'com.example.app.ReminderActionReceiver',
+    action: 'com.example.app.ACTION_START_REMINDER',
+  ),
+),
+```
+
+The receiver must be registered in `AndroidManifest.xml`. The class name may be
+fully qualified or begin with `.` to make it relative to the application
+package. Actions with a native target bypass
+`onDidReceiveNotificationResponse` and
+`onDidReceiveBackgroundNotificationResponse`.
+
+The plugin includes `FlutterLocalNotificationsActionReceiver`, a native Android
+base class that automatically applies the action's `cancelNotification` setting
+and exposes helpers for reading the notification ID, tag, action ID, payload and
+remote input. For example, in Kotlin:
+
+```kotlin
+class ReminderActionReceiver : FlutterLocalNotificationsActionReceiver() {
+    override fun onReceiveNotificationAction(context: Context, intent: Intent) {
+        val actionId = FlutterLocalNotificationsActionReceiver.getActionId(intent)
+        val payload = FlutterLocalNotificationsActionReceiver.getPayload(intent)
+        // Start native work or forward the command to another Android service.
+    }
+}
+```
+
+A custom receiver may extend Android's `BroadcastReceiver` directly, but it is
+then responsible for applying any desired notification cancellation itself. It
+can call `FlutterLocalNotificationsActionReceiver.cancelNotificationIfNeeded()`
+and use the same static metadata accessors without extending the base class.
 
 ### Example app
 

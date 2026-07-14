@@ -56,6 +56,9 @@ const String urlLaunchActionId = 'id_1';
 /// A notification action which triggers a App navigation event
 const String navigationActionId = 'id_3';
 
+/// A notification action delivered directly to an Android BroadcastReceiver.
+const String nativeReceiverActionId = 'native_receiver_action';
+
 /// Defines a iOS/MacOS notification category for text input actions.
 const String darwinNotificationCategoryText = 'textCategory';
 
@@ -1182,6 +1185,16 @@ class _HomePageState extends State<HomePage> {
           'Mark as read',
           semanticAction: SemanticAction.markAsRead,
           invisible: true,
+        ),
+        AndroidNotificationAction(
+          nativeReceiverActionId,
+          'Native receiver',
+          target: AndroidNotificationActionTarget.broadcastReceiver(
+            className:
+                'com.dexterous.flutter_local_notifications_example.CustomActionReceiver',
+            action:
+                'com.dexterous.flutter_local_notifications_example.CUSTOM_ACTION',
+          ),
         ),
       ],
     );

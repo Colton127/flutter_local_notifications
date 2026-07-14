@@ -36,6 +36,32 @@ class AndroidNotificationActionInput {
   final Set<String> allowedMimeTypes;
 }
 
+/// Defines a native Android component that should receive a notification action.
+///
+/// Actions with a target are delivered directly to the specified native
+/// component instead of invoking the plugin's foreground or background Dart
+/// notification response callbacks.
+class AndroidNotificationActionTarget {
+  /// Creates a target for an app-defined Android `BroadcastReceiver`.
+  ///
+  /// [className] must be the fully-qualified receiver class name or a class name
+  /// beginning with `.` that is relative to the application package. The
+  /// receiver must be registered in the application's `AndroidManifest.xml`.
+  ///
+  /// When [action] is provided, it is set as the native Android intent action.
+  const AndroidNotificationActionTarget.broadcastReceiver({
+    required this.className,
+    this.action,
+  }) : assert(className != ''),
+       assert(action == null || action != '');
+
+  /// The class name of the native Android `BroadcastReceiver`.
+  final String className;
+
+  /// The optional native Android intent action.
+  final String? action;
+}
+
 /// Mirrors the `Action` class in AndroidX.
 ///
 /// See the offical docs at
@@ -58,7 +84,12 @@ class AndroidNotificationAction {
     this.cancelNotification = true,
     this.semanticAction = SemanticAction.none,
     this.invisible = false,
-  });
+    this.target,
+  }) : assert(
+         target == null || !showsUserInterface,
+         'A native notification action target cannot be combined with '
+         'showsUserInterface.',
+       );
 
   /// This ID will be sent back in the action handler defined in
   /// [FlutterLocalNotificationsPlugin].
@@ -102,6 +133,13 @@ class AndroidNotificationAction {
 
   /// Sets the visibility of the action in the notification.
   final bool invisible;
+
+  /// An optional native Android component that receives this action directly.
+  ///
+  /// When specified, selecting this action bypasses
+  /// `onDidReceiveNotificationResponse` and
+  /// `onDidReceiveBackgroundNotificationResponse`.
+  final AndroidNotificationActionTarget? target;
 }
 
 /// Contains notification details specific to Android.

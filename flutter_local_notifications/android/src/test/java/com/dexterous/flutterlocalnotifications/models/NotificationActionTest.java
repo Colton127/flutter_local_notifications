@@ -32,6 +32,12 @@ public class NotificationActionTest {
     raw.put("iconBitmapSource", 4);
     raw.put("semanticAction", 1);
 
+    final Map<String, Object> target = new HashMap<>();
+    target.put("type", "broadcastReceiver");
+    target.put("className", "com.example.ActionReceiver");
+    target.put("action", "com.example.ACTION_NOTIFICATION");
+    raw.put("target", target);
+
     final List<Map<String, Object>> inputs = new ArrayList<>();
     final Map<String, Object> aInput = new HashMap<>();
     aInput.put("choices", Collections.singletonList("choice"));
@@ -54,6 +60,9 @@ public class NotificationActionTest {
     assertEquals(true, action.allowGeneratedReplies);
     assertEquals(Integer.valueOf(1), action.semanticAction);
     assertEquals(IconSource.ByteArray, action.iconSource);
+    assertEquals("broadcastReceiver", action.target.type);
+    assertEquals("com.example.ActionReceiver", action.target.className);
+    assertEquals("com.example.ACTION_NOTIFICATION", action.target.action);
     assertEquals(
         new NotificationActionInput(
             Collections.singletonList("choice"),

@@ -13,6 +13,23 @@ import java.util.Map;
 
 @Keep
 public class NotificationAction implements Serializable {
+  @Keep
+  public static class NotificationActionTarget implements Serializable {
+    private static final String TYPE = "type";
+    private static final String CLASS_NAME = "className";
+    private static final String ACTION = "action";
+
+    public NotificationActionTarget(Map<String, Object> arguments) {
+      type = (String) arguments.get(TYPE);
+      className = (String) arguments.get(CLASS_NAME);
+      action = (String) arguments.get(ACTION);
+    }
+
+    public final String type;
+    public final String className;
+    @Nullable public final String action;
+  }
+
   public static class NotificationActionInput implements Serializable {
 
     public NotificationActionInput(
@@ -85,6 +102,7 @@ public class NotificationAction implements Serializable {
   private static final String CANCEL_NOTIFICATION = "cancelNotification";
   private static final String SEMANTIC_ACTION = "semanticAction";
   private static final String INVISIBLE = "invisible";
+  private static final String TARGET = "target";
 
   public final String id;
   public final String title;
@@ -97,6 +115,7 @@ public class NotificationAction implements Serializable {
   @Nullable public final Integer semanticAction;
   @Nullable public final Boolean invisible;
   @Nullable public final IconSource iconSource;
+  @Nullable public final NotificationActionTarget target;
   // actionInputs is annotated as nullable as the Flutter API use to allow this to be nullable
   // before null-safety was added in
   @Nullable public final List<NotificationActionInput> actionInputs = new ArrayList<>();
@@ -122,6 +141,11 @@ public class NotificationAction implements Serializable {
     allowGeneratedReplies = (Boolean) arguments.get(ALLOW_GENERATED_REPLIES);
     semanticAction = (Integer) arguments.get(SEMANTIC_ACTION);
     invisible = (Boolean) arguments.get(INVISIBLE);
+
+    @SuppressWarnings("unchecked")
+    Map<String, Object> targetArguments =
+        (Map<String, Object>) arguments.get(TARGET);
+    target = targetArguments == null ? null : new NotificationActionTarget(targetArguments);
 
     Integer iconSourceIndex = (Integer) arguments.get(ICON_SOURCE);
     if (iconSourceIndex != null) {

@@ -17,6 +17,11 @@ jobs:
         with:
           ref: agent/custom-android-action-receiver
           show-progress: false
+      - name: Export staged patch segments
+        uses: actions/upload-artifact@v4
+        with:
+          name: staged-custom-action-receiver-patch
+          path: .github/patch
       - name: Assemble and decode patch
         run: |
           cat \
@@ -28,12 +33,6 @@ jobs:
             .github/patch/custom-action-receiver.part05 \
             .github/patch/custom-action-receiver.part06 \
             | base64 --decode > /tmp/custom-action-receiver.patch
-          sha256sum /tmp/custom-action-receiver.patch
-      - name: Export decoded patch
-        uses: actions/upload-artifact@v4
-        with:
-          name: decoded-custom-action-receiver-patch
-          path: /tmp/custom-action-receiver.patch
       - name: Check and apply implementation
         run: |
           git apply --check --verbose /tmp/custom-action-receiver.patch

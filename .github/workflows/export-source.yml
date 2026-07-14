@@ -1,15 +1,16 @@
 name: Apply custom action receiver patch
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/custom-android-action-receiver
+      - master
 
 permissions:
   contents: write
 
 jobs:
   apply:
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

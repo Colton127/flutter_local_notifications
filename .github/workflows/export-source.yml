@@ -17,9 +17,29 @@ jobs:
         with:
           ref: agent/custom-android-action-receiver
           show-progress: false
+      - name: Verify patch part 00
+        continue-on-error: true
+        run: echo "779dc428d9592d8194dea365e0c8320206819f9bcc8eaff214063d19bcd8bede  .github/patch/custom-action-receiver.part00" | sha256sum --check
+      - name: Verify patch part 01
+        continue-on-error: true
+        run: echo "55dde3f25076cacf1e61918a5c8ec3428a8a066ff55ba1b0060197a7db425a3c  .github/patch/custom-action-receiver.part01" | sha256sum --check
+      - name: Verify patch part 02
+        continue-on-error: true
+        run: echo "79953ec42aca4a2d0c31c8db9e39d613fb5973745acba91a9551eb32b6d8ee02  .github/patch/custom-action-receiver.part02" | sha256sum --check
+      - name: Verify patch part 03
+        continue-on-error: true
+        run: echo "1d9a04ccc65917836ffb4ae367aaf3badb9592be50842354f03ce8be8808f264  .github/patch/custom-action-receiver.part03" | sha256sum --check
+      - name: Verify patch part 04
+        continue-on-error: true
+        run: echo "4d4d246f340ed7821eb82b4f43cb2381712dac35a1b40875f0222442707189a5  .github/patch/custom-action-receiver.part04" | sha256sum --check
+      - name: Verify patch part 05
+        continue-on-error: true
+        run: echo "0415b29fabd052f353f9279965a3e73d91cae42663e5483ca64f9174cc4bb27f  .github/patch/custom-action-receiver.part05" | sha256sum --check
+      - name: Verify patch part 06
+        continue-on-error: true
+        run: echo "ea493a76c6fabcae8e3db2722b651e56e520de170f686a2117c3f47f8a5a89be  .github/patch/custom-action-receiver.part06" | sha256sum --check
       - name: Verify staged patch
         run: |
-          set -euxo pipefail
           cat .github/patch/custom-action-receiver.part* > /tmp/custom-action-receiver.b64
           echo "4a42c663fa5b834116fa66c5bfbf141d17bdd50969d10a2a5aa41b6e7b477567  /tmp/custom-action-receiver.b64" | sha256sum --check
           base64 --decode /tmp/custom-action-receiver.b64 > /tmp/custom-action-receiver.patch

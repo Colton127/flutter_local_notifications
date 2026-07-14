@@ -52,16 +52,7 @@ public class ActionBroadcastReceiver extends BroadcastReceiver {
     final Map<String, Object> action =
         FlutterLocalNotificationsPlugin.extractNotificationResponseMap(intent);
 
-    if (intent.getBooleanExtra(FlutterLocalNotificationsPlugin.CANCEL_NOTIFICATION, false)) {
-      int notificationId = (int) action.get(FlutterLocalNotificationsPlugin.NOTIFICATION_ID);
-      Object tag = action.get(FlutterLocalNotificationsPlugin.NOTIFICATION_TAG);
-
-      if (tag instanceof String) {
-        NotificationManagerCompat.from(context).cancel((String) tag, notificationId);
-      } else {
-        NotificationManagerCompat.from(context).cancel(notificationId);
-      }
-    }
+    cancelNotificationIfNeeded(context, intent);
 
     if (actionEventSink == null) {
       actionEventSink = new ActionEventSink();
@@ -69,6 +60,22 @@ public class ActionBroadcastReceiver extends BroadcastReceiver {
     actionEventSink.addItem(action);
 
     startEngine(context);
+  }
+
+  static void cancelNotificationIfNeeded(Context context, Intent intent) {
+    if (!intent.getBooleanExtra(FlutterLocalNotificationsPlugin.CANCEL_NOTIFICATION, false)) {
+      return;
+    }
+
+    int notificationId =
+        intent.getIntExtra(FlutterLocalNotificationsPlugin.NOTIFICATION_ID, 0);
+    String tag = intent.getStringExtra(FlutterLocalNotificationsPlugin.NOTIFICATION_TAG);
+
+    if (tag == null) {
+      NotificationManagerCompat.from(context).cancel(notificationId);
+    } else {
+      NotificationManagerCompat.from(context).cancel(tag, notificationId);
+    }
   }
 
   private void startEngine(Context context) {

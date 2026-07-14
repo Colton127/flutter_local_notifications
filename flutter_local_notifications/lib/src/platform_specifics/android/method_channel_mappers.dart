@@ -180,6 +180,15 @@ extension MessagingStyleInformationMapper on MessagingStyleInformation {
       });
 }
 
+extension AndroidNotificationActionTargetMapper
+    on AndroidNotificationActionTarget {
+  Map<String, Object?> toMap() => <String, Object?>{
+    'type': 'broadcastReceiver',
+    'className': className,
+    'action': action,
+  };
+}
+
 extension AndroidNotificationDetailsMapper on AndroidNotificationDetails {
   Map<String, Object?> toMap() =>
       <String, Object?>{
@@ -326,6 +335,7 @@ extension AndroidNotificationDetailsMapper on AndroidNotificationDetails {
               'cancelNotification': e.cancelNotification,
               'semanticAction': e.semanticAction.value,
               'invisible': e.invisible,
+              if (e.target != null) 'target': e.target!.toMap(),
             },
           )
           .toList(),

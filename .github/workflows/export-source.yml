@@ -1,0 +1,20 @@
+name: Export source
+
+on:
+  push:
+    branches:
+      - agent/custom-android-action-receiver
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: flutter-local-notifications-source
+          path: .
+          include-hidden-files: true

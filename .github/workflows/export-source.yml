@@ -1,4 +1,4 @@
-name: Apply custom action receiver patch
+name: Diagnose custom action receiver patch
 
 on:
   pull_request:
@@ -6,10 +6,10 @@ on:
       - master
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  apply:
+  diagnose:
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
@@ -17,7 +17,7 @@ jobs:
         with:
           ref: agent/custom-android-action-receiver
           show-progress: false
-      - name: Assemble and decode patch
+      - name: Assemble and validate patch
         run: |
           cat \
             .github/patch/custom-action-receiver.part00 \
@@ -31,18 +31,13 @@ jobs:
             .github/patch/custom-action-receiver.part06a \
             .github/patch/custom-action-receiver.part06b \
             | base64 --decode > /tmp/custom-action-receiver.patch
-      - name: Check and apply implementation
-        run: |
-          git apply --check --verbose /tmp/custom-action-receiver.patch
-          git apply --index /tmp/custom-action-receiver.patch
-      - name: Remove temporary staging files
-        run: |
-          rm -rf .github/patch
-          rm .github/workflows/export-source.yml
-          git add -A
-      - name: Commit and push implementation
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Add custom Android notification action receivers"
-          git push origin HEAD:agent/custom-android-action-receiver
+          sha256sum /tmp/custom-action-receiver.patch > /tmp/patch-sha.txt
+          git apply --check --verbose /tmp/custom-action-receiver.patch > /tmp/apply-check.txt 2>&1 || true
+      - name: Export diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: custom-action-receiver-diagnostics
+          path: |
+            /tmp/custom-action-receiver.patch
+            /tmp/patch-sha.txt
+            /tmp/apply-check.txt
